@@ -1,0 +1,94 @@
+{
+  "name": "meer-vscode",
+  "displayName": "MeerAI for VS Code",
+  "description": "Bring MeerAI's local-first coding assistant into Visual Studio Code.",
+  "version": "0.0.1",
+  "publisher": "meer-ai",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:meerai.askWorkspace",
+    "onCommand:meerai.explainSelection",
+    "onCommand:meerai.configureProvider",
+    "onCommand:meerai.newChatSession",
+    "onView:meerai.chat"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "meerai.askWorkspace",
+        "title": "MeerAI: Ask Workspace",
+        "category": "MeerAI"
+      },
+      {
+        "command": "meerai.explainSelection",
+        "title": "MeerAI: Explain Selection",
+        "category": "MeerAI"
+      },
+      {
+        "command": "meerai.configureProvider",
+        "title": "MeerAI: Configure Provider",
+        "category": "MeerAI"
+      },
+      {
+        "command": "meerai.newChatSession",
+        "title": "MeerAI: New Chat",
+        "category": "MeerAI"
+      }
+    ],
+    "configuration": {
+      "title": "MeerAI",
+      "properties": {
+        "meerai.cliCommand": {
+          "type": "string",
+          "default": "meer",
+          "description": "Command used to invoke the MeerAI CLI. Accepts either the binary name on PATH or an absolute path."
+        },
+        "meerai.maxBuffer": {
+          "type": "number",
+          "default": 1024,
+          "minimum": 128,
+          "description": "Maximum number of kilobytes to retain from a single MeerAI response."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "meerai",
+          "title": "MeerAI",
+          "icon": "media/meerai.svg"
+        }
+      ]
+    },
+    "views": {
+      "meerai": [
+        {
+          "id": "meerai.chat",
+          "name": "Chat",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "package": "npx @vscode/vsce package"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.15.0",
+    "typescript": "^5.4.0"
+  }
+}
