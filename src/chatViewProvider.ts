@@ -216,16 +216,32 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
       justify-content: space-between;
       padding: 0.75rem 1rem;
       border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+      background: color-mix(in srgb, var(--vscode-editor-background) 94%, transparent);
     }
     #chat-header h1 {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    #session-mode {
+      font-size: 0.75rem;
+      color: var(--vscode-descriptionForeground);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 35%, transparent);
     }
     .header-left {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.25rem;
     }
     #session-meta {
       font-size: 0.8rem;
@@ -234,7 +250,7 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
       gap: 0.4rem;
       align-items: center;
     }
-    #session-meta[aria-hidden=true] {
+    #session-meta[aria-hidden="true"] {
       display: none;
     }
     .header-actions {
@@ -243,69 +259,202 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
     }
     .header-actions button {
       border: none;
-      background: color-mix(in srgb, var(--vscode-button-background) 60%, transparent);
-      color: var(--vscode-button-foreground);
-      padding: 0.35rem 0.7rem;
-      border-radius: 4px;
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
       cursor: pointer;
     }
-    .header-actions button:hover {
-      background: var(--vscode-button-hoverBackground);
-    }
-    #settings {
+    .header-actions .ghost {
       background: transparent;
       color: var(--vscode-descriptionForeground);
       border: 1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 35%, transparent);
     }
-    #settings:hover {
-      color: var(--vscode-button-foreground);
-      border-color: color-mix(in srgb, var(--vscode-button-foreground) 40%, transparent);
+    .header-actions .ghost.warn {
+      border-color: color-mix(in srgb, var(--vscode-errorForeground) 35%, transparent);
+      color: var(--vscode-errorForeground);
+    }
+    .header-actions button:hover {
+      background: color-mix(in srgb, var(--vscode-button-hoverBackground) 80%, transparent);
     }
     #conversation {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem;
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      position: relative;
     }
-    .message {
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vscode-editorWidget-border) 60%, transparent);
+    #empty-state {
+      margin: auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+      max-width: 420px;
+      color: var(--vscode-descriptionForeground);
     }
-    .message.user {
-      align-self: flex-end;
+    #empty-state h2 {
+      margin: 0;
+      color: var(--vscode-foreground);
+    }
+    #empty-state .bot-avatar {
+      font-size: 2.4rem;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
       background: color-mix(in srgb, var(--vscode-editor-selectionBackground) 25%, transparent);
     }
-    .message.assistant {
-      background: color-mix(in srgb, var(--vscode-editorWidget-background) 80%, transparent);
+    .empty-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .message.streaming {
-      border-style: dashed;
+    .empty-actions button {
+      border: 1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 30%, transparent);
+      background: transparent;
+      color: var(--vscode-descriptionForeground);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .empty-actions button:hover {
+      color: var(--vscode-button-foreground);
+      border-color: color-mix(in srgb, var(--vscode-button-foreground) 35%, transparent);
+    }
+    .message-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vscode-editorWidget-border) 40%, transparent);
+      background: color-mix(in srgb, var(--vscode-editorWidget-background) 85%, transparent);
+      position: relative;
+    }
+    .message-card.user {
+      background: color-mix(in srgb, var(--vscode-editor-selectionBackground) 25%, transparent);
+    }
+    .message-card.streaming::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--vscode-descriptionForeground) 35%, transparent);
+      pointer-events: none;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      background: color-mix(in srgb, var(--vscode-editor-selectionBackground) 15%, transparent);
+    }
+    .message-card.user .avatar {
+      background: color-mix(in srgb, var(--vscode-editor-selectionBackground) 35%, transparent);
+    }
+    .message-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .message-meta {
+      font-size: 0.75rem;
+      color: var(--vscode-descriptionForeground);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .message-content {
+      color: var(--vscode-foreground);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .message-content pre {
+      background: color-mix(in srgb, var(--vscode-editor-background) 90%, transparent);
+      padding: 0.75rem;
+      border-radius: 8px;
+      overflow-x: auto;
     }
     form {
       padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
       border-top: 1px solid var(--vscode-sideBarSectionHeader-border);
       background: color-mix(in srgb, var(--vscode-editor-background) 92%, transparent);
     }
+    .control-deck {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .toggle-group {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--vscode-descriptionForeground);
+    }
+    .toggle input {
+      accent-color: color-mix(in srgb, var(--vscode-button-background) 80%, transparent);
+    }
+    .mode-switch {
+      display: flex;
+      gap: 0.4rem;
+      background: color-mix(in srgb, var(--vscode-editor-background) 95%, transparent);
+      padding: 0.2rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--vscode-editorWidget-border) 40%, transparent);
+    }
+    .mode-pill {
+      border: none;
+      background: transparent;
+      color: var(--vscode-descriptionForeground);
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .mode-pill.active {
+      background: var(--vscode-button-background);
+      color: var(--vscode-button-foreground);
+    }
     textarea {
       resize: vertical;
-      min-height: 3rem;
-      max-height: 12rem;
+      min-height: 4rem;
+      max-height: 14rem;
       font-family: inherit;
-      font-size: inherit;
-      padding: 0.75rem;
-      border-radius: 6px;
-      border: 1px solid var(--vscode-input-border);
-      background: var(--vscode-input-background);
+      font-size: 0.95rem;
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--vscode-input-border) 80%, transparent);
+      background: color-mix(in srgb, var(--vscode-editor-background) 92%, transparent);
       color: inherit;
+    }
+    textarea:focus {
+      outline: 1px solid color-mix(in srgb, var(--vscode-button-background) 60%, transparent);
+    }
+    .composer-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
     .status {
       font-size: 0.8rem;
@@ -314,14 +463,19 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
     }
     .form-actions {
       display: flex;
-      justify-content: flex-end;
       gap: 0.5rem;
     }
     .form-actions button {
       padding: 0.5rem 1.25rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .form-actions button .icon {
+      font-size: 0.85rem;
     }
     #submit {
       background: var(--vscode-button-background);
@@ -333,11 +487,11 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
     }
     #cancel {
       background: transparent;
-      color: var(--vscode-button-foreground);
-      border: 1px solid color-mix(in srgb, var(--vscode-button-foreground) 40%, transparent);
+      color: var(--vscode-descriptionForeground);
+      border: 1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 30%, transparent);
     }
     #cancel[disabled] {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: default;
     }
   </style>
@@ -357,53 +511,100 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
     <section id="chat">
       <header id="chat-header">
         <div class="header-left">
-          <h1 id="session-title">Chat</h1>
+          <div class="title-row">
+            <h1 id="session-title">Chat</h1>
+            <span id="session-mode">Conversational</span>
+          </div>
           <div id="session-meta"></div>
         </div>
         <div class="header-actions">
-          <button id="settings" title="Configure provider and model">Settings</button>
-          <button id="rename-session" title="Rename chat">Rename</button>
-          <button id="delete-session" title="Delete chat">Delete</button>
+          <button id="settings" class="ghost" title="Configure provider and model">Settings</button>
+          <button id="rename-session" class="ghost" title="Rename chat">Rename</button>
+          <button id="delete-session" class="ghost warn" title="Delete chat">Delete</button>
         </div>
       </header>
-      <main id="conversation" aria-live="polite" aria-label="MeerAI conversation history"></main>
+      <main id="conversation" aria-live="polite" aria-label="MeerAI conversation history">
+        <div id="empty-state" role="presentation">
+          <div class="bot-avatar">🌊</div>
+          <h2>What can I help you build?</h2>
+          <p>Ask MeerAI about this workspace, explain code, or draft a plan.</p>
+          <div class="empty-actions">
+            <button data-suggestion="Review the latest changes">Review changes</button>
+            <button data-suggestion="Explain the purpose of README.md">Explain a file</button>
+            <button data-suggestion="Generate tests for the services directory">Generate tests</button>
+          </div>
+        </div>
+      </main>
       <form id="meerai-form">
-        <textarea id="prompt" placeholder="Ask MeerAI about your workspace…"></textarea>
-        <div class="status" id="status"></div>
-        <div class="form-actions">
-          <button type="button" id="cancel" disabled>Cancel</button>
-          <button type="submit" id="submit">Send</button>
+        <div class="control-deck">
+          <div class="toggle-group">
+            <label class="toggle">
+              <input type="checkbox" id="auto-approve" checked>
+              <span>Auto-approve</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="read-mode" checked>
+              <span>Read</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="edit-mode">
+              <span>Edit</span>
+            </label>
+          </div>
+          <div class="mode-switch">
+            <button type="button" class="mode-pill active" data-mode="plan">Plan</button>
+            <button type="button" class="mode-pill" data-mode="act">Act</button>
+          </div>
+        </div>
+        <textarea id="prompt" placeholder="Describe your task, or use / for commands…"></textarea>
+        <div class="composer-footer">
+          <div class="status" id="status"></div>
+          <div class="form-actions">
+            <button type="button" id="cancel" class="ghost" disabled>Cancel</button>
+            <button type="submit" id="submit">
+              <span class="icon">➤</span>
+              <span>Send</span>
+            </button>
+          </div>
         </div>
       </form>
     </section>
   </div>
   <script nonce="${nonce}">
-    const vscode = acquireVsCodeApi();
+    (() => {
+      const vscode = acquireVsCodeApi();
 
-    const sessionList = document.getElementById('session-list');
-    const conversation = document.getElementById('conversation');
-    const sessionTitle = document.getElementById('session-title');
-    const sessionMeta = document.getElementById('session-meta');
-    const form = document.getElementById('meerai-form');
-    const textarea = document.getElementById('prompt');
-    const status = document.getElementById('status');
-    const submitButton = document.getElementById('submit');
-    const cancelButton = document.getElementById('cancel');
-    const newChatButton = document.getElementById('new-chat');
-    const renameButton = document.getElementById('rename-session');
-    const deleteButton = document.getElementById('delete-session');
-    const settingsButton = document.getElementById('settings');
-    if (sessionMeta) {
-      sessionMeta.setAttribute('aria-hidden', 'true');
-    }
+      const dom = {
+        sessionList: document.getElementById('session-list'),
+        conversation: document.getElementById('conversation'),
+        emptyState: document.getElementById('empty-state'),
+        sessionTitle: document.getElementById('session-title'),
+        sessionMeta: document.getElementById('session-meta'),
+        sessionMode: document.getElementById('session-mode'),
+        form: document.getElementById('meerai-form'),
+        textarea: document.getElementById('prompt'),
+        status: document.getElementById('status'),
+        submitButton: document.getElementById('submit'),
+        cancelButton: document.getElementById('cancel'),
+        newChatButton: document.getElementById('new-chat'),
+        renameButton: document.getElementById('rename-session'),
+        deleteButton: document.getElementById('delete-session'),
+        settingsButton: document.getElementById('settings'),
+        modePills: Array.from(document.querySelectorAll('.mode-pill')),
+        suggestionButtons: Array.from(document.querySelectorAll('[data-suggestion]')),
+      };
 
-    const state = {
-      sessions: [],
-      activeSessionId: null,
-      activeRequestId: null,
-      pendingResponses: new Map(),
-      provider: null,
-    };
+      if (dom.sessionMeta) {
+        dom.sessionMeta.setAttribute('aria-hidden', 'true');
+      }
+
+      const state = {
+        sessions: [],
+        activeSessionId: null,
+        activeRequestId: null,
+        pendingResponses: new Map(),
+        provider: null,
+      };
 
     function getActiveSession() {
       return state.sessions.find((session) => session.id === state.activeSessionId) || null;
@@ -562,102 +763,334 @@ export class MeerAiChatViewProvider implements vscode.WebviewViewProvider {
       setStatus('Thinking…');
       setPendingState(true);
 
-      appendMessageElement('user', prompt, { messageId: requestId + '-user' });
+      dom.form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const session = getActiveSession();
+        if (!session) {
+          vscode.postMessage({ type: 'newSession' });
+          return;
+        }
 
-      textarea.value = '';
-      textarea.focus();
+        const prompt = dom.textarea.value.trim();
+        if (!prompt || state.activeRequestId) {
+          return;
+        }
 
-      vscode.postMessage({
-        type: 'ask',
-        requestId,
-        prompt,
-        sessionId: session.id,
+        const requestId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+        state.activeRequestId = requestId;
+        state.pendingResponses.delete(requestId);
+
+        setStatus('Thinking…');
+        setPendingState(true);
+
+        appendMessageCard('user', prompt, { messageId: requestId + '-user' });
+
+        dom.textarea.value = '';
+        dom.textarea.focus();
+
+        vscode.postMessage({
+          type: 'ask',
+          requestId,
+          prompt,
+          sessionId: session.id,
+        });
       });
-    });
 
-    cancelButton.addEventListener('click', () => {
-      if (state.activeRequestId) {
-        vscode.postMessage({ type: 'cancel', requestId: state.activeRequestId });
-      }
-    });
-
-    newChatButton.addEventListener('click', () => {
-      vscode.postMessage({ type: 'newSession' });
-    });
-
-    renameButton.addEventListener('click', () => {
-      const session = getActiveSession();
-      if (!session) {
-        return;
-      }
-      const title = window.prompt('Rename chat', session.title);
-      if (title !== null) {
-        vscode.postMessage({ type: 'renameSession', sessionId: session.id, title });
-      }
-    });
-
-    deleteButton.addEventListener('click', () => {
-      const session = getActiveSession();
-      if (!session) {
-        return;
-      }
-      const confirmed = window.confirm('Delete this chat? Previous messages will be removed.');
-      if (confirmed) {
-        vscode.postMessage({ type: 'deleteSession', sessionId: session.id });
-      }
-    });
-
-    if (settingsButton) {
-      settingsButton.addEventListener('click', () => {
-        vscode.postMessage({ type: 'openSettings' });
+      dom.cancelButton.addEventListener('click', () => {
+        if (state.activeRequestId) {
+          vscode.postMessage({ type: 'cancel', requestId: state.activeRequestId });
+        }
       });
-    }
 
-    window.addEventListener('message', (event) => {
-      const message = event.data;
-      switch (message.type) {
-        case 'state':
-          state.sessions = message.sessions;
-          state.activeSessionId = message.activeSessionId || null;
-          state.provider = message.provider || null;
-          if (message.activeRequestId !== undefined) {
-            state.activeRequestId = message.activeRequestId;
+      dom.newChatButton.addEventListener('click', () => {
+        vscode.postMessage({ type: 'newSession' });
+      });
+
+      dom.renameButton.addEventListener('click', () => {
+        const session = getActiveSession();
+        if (!session) {
+          return;
+        }
+        const title = window.prompt('Rename chat', session.title);
+        if (title !== null) {
+          vscode.postMessage({ type: 'renameSession', sessionId: session.id, title });
+        }
+      });
+
+      dom.deleteButton.addEventListener('click', () => {
+        const session = getActiveSession();
+        if (!session) {
+          return;
+        }
+        const confirmed = window.confirm('Delete this chat? Previous messages will be removed.');
+        if (confirmed) {
+          vscode.postMessage({ type: 'deleteSession', sessionId: session.id });
+        }
+      });
+
+      if (dom.settingsButton) {
+        dom.settingsButton.addEventListener('click', () => {
+          vscode.postMessage({ type: 'openSettings' });
+        });
+      }
+
+      dom.suggestionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const text = button.getAttribute('data-suggestion');
+          if (text) {
+            dom.textarea.value = text;
+            dom.textarea.focus();
           }
-          renderSessions();
-          renderConversation();
-          renderProviderInfo();
-          break;
-        case 'stream':
-          state.pendingResponses.set(message.requestId, {
-            sessionId: message.sessionId,
-            content: (state.pendingResponses.get(message.requestId)?.content || '') + message.chunk,
+        });
+      });
+
+      dom.modePills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          dom.modePills.forEach((p) => p.classList.remove('active'));
+          pill.classList.add('active');
+          if (dom.sessionMode) {
+            dom.sessionMode.textContent = pill.dataset.mode === 'act' ? 'Action Mode' : 'Planning Mode';
+          }
+        });
+      });
+
+      window.addEventListener('message', (event) => {
+        const message = event.data;
+        switch (message.type) {
+          case 'state':
+            state.sessions = message.sessions;
+            state.activeSessionId = message.activeSessionId || null;
+            state.provider = message.provider || null;
+            if (message.activeRequestId !== undefined) {
+              state.activeRequestId = message.activeRequestId;
+            }
+            renderSessions();
+            renderConversation();
+            renderProviderInfo();
+            renderEmptyState();
+            break;
+          case 'stream':
+            state.pendingResponses.set(message.requestId, {
+              sessionId: message.sessionId,
+              content: (state.pendingResponses.get(message.requestId)?.content || '') + message.chunk,
+            });
+            if (message.sessionId === state.activeSessionId) {
+              updateStreamingMessage(message.requestId, state.pendingResponses.get(message.requestId).content);
+            }
+            break;
+          case 'done':
+            state.pendingResponses.delete(message.requestId);
+            if (state.activeRequestId === message.requestId) {
+              state.activeRequestId = null;
+              setStatus('');
+              setPendingState(false);
+            }
+            removeStreamingMessage(message.requestId);
+            break;
+          case 'error':
+            state.pendingResponses.delete(message.requestId);
+            if (state.activeRequestId === message.requestId) {
+              state.activeRequestId = null;
+              setStatus(message.message || 'Something went wrong');
+              setPendingState(false);
+            }
+            removeStreamingMessage(message.requestId);
+            break;
+          default:
+            break;
+        }
+      });
+
+      renderEmptyState();
+
+      function getActiveSession() {
+        return state.sessions.find((session) => session.id === state.activeSessionId) || null;
+      }
+
+      function renderSessions() {
+        dom.sessionList.innerHTML = '';
+        if (!state.sessions.length) {
+          return;
+        }
+        for (const session of state.sessions) {
+          const item = document.createElement('li');
+          item.className = 'session-item' + (session.id === state.activeSessionId ? ' active' : ''); 
+          item.dataset.sessionId = session.id;
+
+          const title = document.createElement('div');
+          title.className = 'session-title';
+          title.textContent = session.title || 'Chat';
+          item.appendChild(title);
+
+          const preview = document.createElement('div');
+          preview.className = 'session-preview';
+          const lastMessage = session.messages[session.messages.length - 1];
+          preview.textContent = lastMessage ? summarize(lastMessage.content) : 'Start chatting…';
+          item.appendChild(preview);
+
+          item.addEventListener('click', () => {
+            vscode.postMessage({ type: 'selectSession', sessionId: session.id });
           });
-          if (message.sessionId === state.activeSessionId) {
-            updateStreamingMessage(message.requestId, state.pendingResponses.get(message.requestId).content);
-          }
-          break;
-        case 'done':
-          state.pendingResponses.delete(message.requestId);
-          if (state.activeRequestId === message.requestId) {
-            state.activeRequestId = null;
-            setStatus('');
-            setPendingState(false);
-          }
-          removeStreamingMessage(message.requestId);
-          break;
-        case 'error':
-          state.pendingResponses.delete(message.requestId);
-          if (state.activeRequestId === message.requestId) {
-            state.activeRequestId = null;
-            setStatus(message.message || 'Something went wrong');
-            setPendingState(false);
-          }
-          removeStreamingMessage(message.requestId);
-          break;
-        default:
-          break;
+
+          dom.sessionList.appendChild(item);
+        }
       }
-    });
+
+      function renderConversation() {
+        dom.conversation.innerHTML = '';
+        const session = getActiveSession();
+        renderProviderInfo();
+        if (!session) {
+          dom.sessionTitle.textContent = 'No chat selected';
+          setPendingState(true);
+          renderEmptyState();
+          return;
+        }
+
+        dom.sessionTitle.textContent = session.title || 'Chat';
+        setPendingState(false);
+
+        for (const message of session.messages) {
+          appendMessageCard(message.role, message.content, { messageId: message.id });
+        }
+
+        for (const [requestId, pending] of state.pendingResponses.entries()) {
+          if (pending.sessionId === session.id) {
+            appendMessageCard('assistant', pending.content, { requestId, streaming: true });
+          }
+        }
+
+        dom.conversation.scrollTop = dom.conversation.scrollHeight;
+        renderEmptyState();
+      }
+
+      function appendMessageCard(role, text, { messageId, requestId, streaming } = {}) {
+        const card = document.createElement('article');
+        card.className = 'message-card ' + role + (streaming ? ' streaming' : '');
+        if (messageId) {
+          card.dataset.messageId = messageId;
+        }
+        if (requestId) {
+          card.dataset.requestId = requestId;
+        }
+
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = role === 'assistant' ? '🌊' : '🙂';
+
+        const body = document.createElement('div');
+        body.className = 'message-body';
+
+        const meta = document.createElement('div');
+        meta.className = 'message-meta';
+        const who = document.createElement('span');
+        who.textContent = role === 'assistant' ? 'MeerAI' : 'You';
+        const when = document.createElement('time');
+        const now = new Date();
+        when.dateTime = now.toISOString();
+        when.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        meta.append(who, '·', when);
+
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        content.innerHTML = renderMessageHtml(text);
+
+        body.append(meta, content);
+        card.append(avatar, body);
+        dom.conversation.appendChild(card);
+        dom.conversation.scrollTop = dom.conversation.scrollHeight;
+        renderEmptyState();
+        return card;
+      }
+
+      function updateStreamingMessage(requestId, text) {
+        let card = dom.conversation.querySelector('.message-card.streaming[data-request-id="' + requestId + '"]');
+        if (!card) {
+          card = appendMessageCard('assistant', text, { requestId, streaming: true });
+        } else {
+          const content = card.querySelector('.message-content');
+          if (content) {
+            content.innerHTML = renderMessageHtml(text);
+          }
+          dom.conversation.scrollTop = dom.conversation.scrollHeight;
+        }
+      }
+
+      function removeStreamingMessage(requestId) {
+        const card = dom.conversation.querySelector('.message-card.streaming[data-request-id="' + requestId + '"]');
+        if (card && card.parentElement === dom.conversation) {
+          dom.conversation.removeChild(card);
+        }
+        renderEmptyState();
+      }
+
+      function setStatus(text) {
+        dom.status.textContent = text || '';
+      }
+
+      function setPendingState(pending) {
+        dom.submitButton.disabled = pending || !state.activeSessionId;
+        dom.cancelButton.disabled = !pending;
+      }
+
+      function summarize(text) {
+        if (!text) {
+          return '';
+        }
+        const trimmed = text.trim().replace(/\s+/g, ' ');
+        return trimmed.length > 40 ? trimmed.slice(0, 40) + '…' : trimmed;
+      }
+
+      function renderMessageHtml(text) {
+        const escaped = text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        const blocks = escaped.split(/\n{2,}/).map((block) => {
+          const trimmed = block.trim();
+          if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
+            return '<pre><code>' + trimmed.slice(3, -3) + '</code></pre>';
+          }
+          return trimmed.replace(/\n/g, '<br>');
+        });
+        return blocks.join('<br><br>');
+      }
+
+      function renderProviderInfo() {
+        if (!dom.sessionMeta) {
+          return;
+        }
+        if (!state.provider) {
+          dom.sessionMeta.textContent = '';
+          dom.sessionMeta.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        const { label, model, source } = state.provider;
+        const segments = [label];
+        if (model) {
+          segments.push(model);
+        }
+        dom.sessionMeta.textContent = segments.join(' • ');
+        let origin = 'provider default';
+        if (source === 'workspace') {
+          origin = 'workspace override';
+        } else if (source === 'config') {
+          origin = 'config default';
+        }
+        const modelLabel = model ?? 'default';
+        dom.sessionMeta.title = 'Provider: ' + label + '\nModel: ' + modelLabel + ' (' + origin + ')';
+        dom.sessionMeta.setAttribute('aria-hidden', 'false');
+      }
+
+      function renderEmptyState() {
+        if (!dom.emptyState) {
+          return;
+        }
+        const hasMessages = state.sessions.some((session) => session.messages.length > 0);
+        const isStreaming = state.pendingResponses.size > 0;
+        dom.emptyState.style.display = hasMessages || isStreaming ? 'none' : 'flex';
+      }
+    })();
   </script>
 </body>
 </html>`;
